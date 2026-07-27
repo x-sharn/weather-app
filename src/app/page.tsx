@@ -4,7 +4,13 @@ import { useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import WeatherCard from "@/components/WeatherCard";
 import ForecastCard from "@/components/ForecastCard";
-import { getCurrentWeather, getForecast, getDailyForecast } from "@/lib/weather";
+import {
+  getCurrentWeather,
+  getCurrentWeatherByCoords,
+  getForecast,
+  getForecastByCoords,
+  getDailyForecast,
+} from "@/lib/weather";
 import type { WeatherData, ForecastItem } from "@/lib/weather";
 
 export default function Home() {
@@ -36,6 +42,28 @@ export default function Home() {
     }
   };
 
+  const handleSearchByCoords = async (lat: number, lon: number, cityName: string) => {
+    setIsLoading(true);
+    setError(null);
+    setWeather(null);
+    setForecast([]);
+    setSearchedCity(cityName);
+
+    try {
+      const [weatherData, forecastData] = await Promise.all([
+        getCurrentWeatherByCoords(lat, lon),
+        getForecastByCoords(lat, lon),
+      ]);
+
+      setWeather(weatherData);
+      setForecast(getDailyForecast(forecastData.list));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative min-h-screen z-10">
       {/* Header */}
@@ -53,7 +81,7 @@ export default function Home() {
             Get real-time weather and a 5-day forecast for any city
           </p>
         </div>
-        <SearchBar onSearch={handleSearch} isLoading={isLoading} />
+        <SearchBar onSearch={handleSearch} onSearchByCoords={handleSearchByCoords} isLoading={isLoading} />
       </header>
 
       {/* Main Content */}

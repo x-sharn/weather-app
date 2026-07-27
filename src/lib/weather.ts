@@ -49,8 +49,32 @@ export interface ForecastData {
   list: ForecastItem[];
 }
 
+export interface CitySuggestion {
+  name: string;
+  lat: number;
+  lon: number;
+  country: string;
+  state?: string;
+  local_names?: Record<string, string>;
+}
+
 const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
 const BASE_URL = "https://api.openweathermap.org/data/2.5";
+const GEO_URL = "https://api.openweathermap.org/geo/1.0";
+
+export async function getCitySuggestions(query: string): Promise<CitySuggestion[]> {
+  if (!query || query.length < 2) return [];
+
+  const res = await fetch(
+    `${GEO_URL}/direct?q=${encodeURIComponent(query)}&limit=5&appid=${API_KEY}`
+  );
+
+  if (!res.ok) {
+    return [];
+  }
+
+  return res.json();
+}
 
 export async function getCurrentWeather(city: string): Promise<WeatherData> {
   const res = await fetch(
@@ -67,6 +91,20 @@ export async function getCurrentWeather(city: string): Promise<WeatherData> {
   return res.json();
 }
 
+export async function getCurrentWeatherByCoords(lat: number, lon: number): Promise<WeatherData> {
+  const res = await fetch(
+    `${BASE_URL}/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`,
+    { next: { revalidate: 300 } }
+  );
+
+  if (!res.ok) {
+    if (res.status === 401) throw new Error("Invalid API key.");
+    throw new Error("Failed to fetch weather data. Please try again.");
+  }
+
+  return res.json();
+}
+
 export async function getForecast(city: string): Promise<ForecastData> {
   const res = await fetch(
     `${BASE_URL}/forecast?q=${encodeURIComponent(city)}&units=metric&appid=${API_KEY}`,
@@ -75,6 +113,20 @@ export async function getForecast(city: string): Promise<ForecastData> {
 
   if (!res.ok) {
     if (res.status === 404) throw new Error("City not found for forecast.");
+    if (res.status === 401) throw new Error("Invalid API key.");
+    throw new Error("Failed to fetch forecast data.");
+  }
+
+  return res.json();
+}
+
+export async function getForecastByCoords(lat: number, lon: number): Promise<ForecastData> {
+  const res = await fetch(
+    `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`,
+    { next: { revalidate: 300 } }
+  );
+
+  if (!res.ok) {
     if (res.status === 401) throw new Error("Invalid API key.");
     throw new Error("Failed to fetch forecast data.");
   }
