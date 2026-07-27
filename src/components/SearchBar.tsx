@@ -106,7 +106,7 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-xl mx-auto mb-8 relative z-20">
+    <form onSubmit={handleSubmit} className="w-full max-w-xl mx-auto mb-8" style={{ position: "relative", zIndex: 9999 }}>
       <div className="relative flex items-center group">
         <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-400 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 blur-sm" />
         <input
@@ -145,7 +145,8 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute top-full mt-2 left-0 right-0 rounded-xl border border-slate-700/40 bg-slate-900/95 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/50 animate-fade-in-up"
+          style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 10000 }}
+          className="rounded-xl border border-slate-700/40 bg-slate-900/95 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/50 animate-fade-in-up"
         >
           {suggestions.map((s, i) => (
             <button
@@ -183,9 +184,12 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
 
       {/* No results message */}
       {noResults && city.trim().length >= 2 && (
-        <div className="absolute top-full mt-2 left-0 right-0 rounded-xl border border-slate-700/30 bg-slate-900/90 backdrop-blur-xl p-4 text-center shadow-2xl shadow-black/50 animate-fade-in-up">
+        <div
+          style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 10000 }}
+          className="rounded-xl border border-slate-700/30 bg-slate-900/90 backdrop-blur-xl p-4 text-center shadow-2xl shadow-black/50 animate-fade-in-up"
+        >
           <p className="text-slate-400 text-sm">
-            No cities found for "<span className="text-orange-300">{city.trim()}</span>"
+            No cities found for &ldquo;<span className="text-orange-300">{city.trim()}</span>&rdquo;
           </p>
           <p className="text-slate-600 text-xs mt-1">Try a different spelling or search for a larger city</p>
         </div>
