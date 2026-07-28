@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent, useEffect, useRef, useCallback } from "react";
-import { getCitySuggestions } from "@/lib/weather";
+import { getCitySuggestions, getNearbyCities } from "@/lib/weather";
 import type { CitySuggestion } from "@/lib/weather";
 
 interface SearchBarProps {
@@ -13,7 +13,9 @@ interface SearchBarProps {
 export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: SearchBarProps) {
   const [city, setCity] = useState("");
   const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
+  const [nearbyCities, setNearbyCities] = useState<CitySuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showNearby, setShowNearby] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [noResults, setNoResults] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +37,7 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
       const results = await getCitySuggestions(city.trim());
       setSuggestions(results);
       setShowSuggestions(results.length > 0);
+      setShowNearby(false);
       setNoResults(results.length === 0);
       setHighlightIndex(-1);
     }, 350);
@@ -70,6 +73,12 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
       setSuggestions([]);
       setNoResults(false);
       onSearchByCoords(suggestion.lat, suggestion.lon, suggestion.name);
+      
+      // Fetch nearby cities
+      getNearbyCities(suggestion.lat, suggestion.lon).then((nearby) => {
+        setNearbyCities(nearby);
+        setShowNearby(true);
+      });
     },
     [onSearchByCoords]
   );
@@ -142,7 +151,7 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
       </div>
 
       {/* Suggestions dropdown */}
-      {showSuggestions && suggestions.length > 0 && (
+      {(showSuggestions && suggestions.length > 0) && (
         <div
           ref={suggestionsRef}
           style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 10000 }}
@@ -173,6 +182,40 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
                     <span className="ml-2">({s.local_names.en})</span>
                   )}
                 </p>
+              </div>
+              <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Nearby cities */}
+      {showNearby && nearbyCities.length > 0 && (
+        <div
+          style={{ position: "absolute", top: "100%", left: 0, right: 0, marginTop: "8px", zIndex: 10000 }}
+          className="rounded-xl border border-slate-700/40 bg-slate-900/95 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/50 animate-fade-in-up"
+        >
+          <div className="px-4 py-2 bg-slate-800/50 border-b border-slate-700/20">
+            <p className="text-xs text-slate-400 font-medium">Nearby Cities</p>
+          </div>
+          {nearbyCities.map((s, i) => (
+            <button
+              key={`nearby-${s.lat}-${s.lon}-${i}`}
+              type="button"
+              onClick={() => selectSuggestion(s)}
+              className="w-full text-left px-4 py-3 transition-all duration-150 flex items-center gap-3 hover:bg-slate-800/80 border-l-2 border-transparent"
+            >
+              <span className="text-lg">🏙️</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-200 truncate">
+                  {s.name}
+                  {s.state && (
+                    <span className="text-slate-400 font-normal">, {s.state}</span>
+                  )}
+                </p>
+                <p className="text-xs text-slate-500">{s.country}</p>
               </div>
               <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

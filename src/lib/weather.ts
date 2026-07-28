@@ -41,9 +41,26 @@ const GEO_URL = "https://api.openweathermap.org/geo/1.0";
 
 export async function getCitySuggestions(query: string): Promise<CitySuggestion[]> {
   if (!query || query.length < 2) return [];
-  const res = await fetch(`${GEO_URL}/direct?q=${encodeURIComponent(query)}&limit=5&appid=${API_KEY}`);
+  const limit = query.length >= 3 ? 10 : 5;
+  const res = await fetch(`${GEO_URL}/direct?q=${encodeURIComponent(query)}&limit=${limit}&appid=${API_KEY}`);
   if (!res.ok) return [];
   return res.json();
+}
+
+export async function getNearbyCities(lat: number, lon: number): Promise<CitySuggestion[]> {
+  try {
+    // Use a bounding box to find nearby cities (roughly 50km radius)
+    const latDelta = 0.5;
+    const lonDelta = 0.5;
+    const res = await fetch(
+      `${GEO_URL}/reverse?lat=${lat + latDelta}&lon=${lon}&limit=5&appid=${API_KEY}`
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.filter((city: CitySuggestion) => city.name && city.country);
+  } catch {
+    return [];
+  }
 }
 
 export async function getCurrentWeather(city: string): Promise<WeatherData> {
