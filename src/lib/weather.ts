@@ -193,4 +193,3 @@ export function getWeatherEmoji(condition: string): string {
   };
   return emojis[condition] || "🌡️";
 }
-</content>
