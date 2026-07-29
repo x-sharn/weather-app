@@ -62,14 +62,17 @@ export default function WeatherCard({ data, unit, aqiData, uvData, alerts, onSha
                 UV {uv.label}
               </span>
             )}
-            <img src={`https://openweathermap.org/img/wn/${data.weather[0]?.icon || "01d"}@2x.png`}
-              alt={data.weather[0]?.description || "weather"} className="w-12 h-12 sm:w-14 sm:h-14 drop-shadow-lg" />
+            {/* Weather animation */}
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14">
+              <img src={`https://openweathermap.org/img/wn/${data.weather[0]?.icon || "01d"}@2x.png`}
+                alt={data.weather[0]?.description || "weather"} className="w-full h-full drop-shadow-lg animate-pulse" />
+            </div>
           </div>
         </div>
 
         {/* Temperature + share button */}
         <div className="flex items-center justify-between mt-1">
-          <div className="flex items-start">
+          <div className="flex items-start gap-2">
             <span className="text-5xl sm:text-6xl font-bold drop-shadow-sm" style={{ color: "var(--foreground)" }}>
               {temp}
             </span>

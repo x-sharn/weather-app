@@ -23,6 +23,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLight, setIsLight] = useState(false);
+  // Dark mode is default (isLight = false)
   const [unit, setUnit] = useState<"C" | "F">("C");
   const [recent, setRecent] = useState<string[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
