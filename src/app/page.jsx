@@ -12,20 +12,18 @@ import {
   getDailyForecast, getHourlyForecast,
   getAQI, getUV, getAlerts,
 } from "@/lib/weather";
-import type { WeatherData, ForecastItem } from "@/lib/weather";
 
 const STORAGE_KEY = "weatherApp_recent";
 
 export default function Home() {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [forecast, setForecast] = useState<ForecastItem[]>([]);
-  const [hourly, setHourly] = useState<ForecastItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [weather, setWeather] = useState(null);
+  const [forecast, setForecast] = useState([]);
+  const [hourly, setHourly] = useState([]);
+  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLight, setIsLight] = useState(false);
-  // Dark mode is default (isLight = false)
-  const [unit, setUnit] = useState<"C" | "F">("C");
-  const [recent, setRecent] = useState<string[]>([]);
+  const [unit, setUnit] = useState("C");
+  const [recent, setRecent] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
 
   // Load recent from localStorage
@@ -36,7 +34,7 @@ export default function Home() {
     } catch {}
   }, []);
 
-  const saveRecent = useCallback((city: string) => {
+  const saveRecent = useCallback((city) => {
     setRecent((prev) => {
       const next = [city, ...prev.filter((c) => c !== city)].slice(0, 5);
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
@@ -44,7 +42,7 @@ export default function Home() {
     });
   }, []);
 
-  const fetchExtra = useCallback(async (lat: number, lon: number) => {
+  const fetchExtra = useCallback(async (lat, lon) => {
     try {
       const [aqiRes, uvRes, alertRes] = await Promise.allSettled([
         getAQI(lat, lon), getUV(lat, lon), getAlerts(lat, lon),
@@ -53,7 +51,7 @@ export default function Home() {
     } catch {}
   }, []);
 
-  const handleSearch = async (city: string) => {
+  const handleSearch = async (city) => {
     setIsLoading(true); setError(null);
     setWeather(null); setForecast([]); setHourly([]);
     try {
@@ -66,7 +64,7 @@ export default function Home() {
     } finally { setIsLoading(false); }
   };
 
-  const handleSearchByCoords = async (lat: number, lon: number, cityName: string) => {
+  const handleSearchByCoords = async (lat, lon, cityName) => {
     setIsLoading(true); setError(null);
     setWeather(null); setForecast([]); setHourly([]);
     try {

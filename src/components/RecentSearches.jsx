@@ -4,12 +4,8 @@ import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "weatherApp_recent";
 
-interface RecentSearchesProps {
-  onSelect: (city: string) => void;
-}
-
-export default function RecentSearches({ onSelect }: RecentSearchesProps) {
-  const [recent, setRecent] = useState<string[]>([]);
+export default function RecentSearches({ onSelect }) {
+  const [recent, setRecent] = useState([]);
 
   useEffect(() => {
     try {

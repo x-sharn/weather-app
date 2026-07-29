@@ -2,25 +2,18 @@
 
 import { useState, FormEvent, useEffect, useRef, useCallback } from "react";
 import { getCitySuggestions, getNearbyCities } from "@/lib/weather";
-import type { CitySuggestion } from "@/lib/weather";
 
-interface SearchBarProps {
-  onSearch: (city: string) => void;
-  onSearchByCoords: (lat: number, lon: number, cityName: string) => void;
-  isLoading: boolean;
-}
-
-export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: SearchBarProps) {
+export default function SearchBar({ onSearch, onSearchByCoords, isLoading }) {
   const [city, setCity] = useState("");
-  const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
-  const [nearbyCities, setNearbyCities] = useState<CitySuggestion[]>([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [nearbyCities, setNearbyCities] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showNearby, setShowNearby] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [noResults, setNoResults] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const inputRef = useRef(null);
+  const suggestionsRef = useRef(null);
+  const debounceRef = useRef(null);
 
   // Fetch suggestions with debounce
   useEffect(() => {
@@ -49,12 +42,12 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
 
   // Close suggestions on click outside
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e) => {
       if (
         suggestionsRef.current &&
-        !suggestionsRef.current.contains(e.target as Node) &&
+        !suggestionsRef.current.contains(e.target) &&
         inputRef.current &&
-        !inputRef.current.contains(e.target as Node)
+        !inputRef.current.contains(e.target)
       ) {
         setShowSuggestions(false);
       }
@@ -64,7 +57,7 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
   }, []);
 
   const selectSuggestion = useCallback(
-    (suggestion: CitySuggestion) => {
+    (suggestion) => {
       const label = suggestion.state
         ? `${suggestion.name}, ${suggestion.state}, ${suggestion.country}`
         : `${suggestion.name}, ${suggestion.country}`;
@@ -83,7 +76,7 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
     [onSearchByCoords]
   );
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!city.trim()) return;
 
@@ -100,7 +93,7 @@ export default function SearchBar({ onSearch, onSearchByCoords, isLoading }: Sea
     setNoResults(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e) => {
     if (!showSuggestions || suggestions.length === 0) return;
 
     if (e.key === "ArrowDown") {

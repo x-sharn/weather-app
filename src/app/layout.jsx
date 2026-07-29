@@ -17,7 +17,7 @@ export const metadata = {
   description: "Get real-time weather and 5-day forecast for any city worldwide.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html
       lang="en"

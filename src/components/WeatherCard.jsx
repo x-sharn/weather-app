@@ -1,18 +1,9 @@
 "use client";
 
-import { WeatherData, formatTime, convertTemp, getAQILabel, getUVLabel } from "@/lib/weather";
+import { formatTime, convertTemp, getAQILabel, getUVLabel } from "@/lib/weather";
 import MapView from "@/components/MapView";
 
-interface WeatherCardProps {
-  data: WeatherData;
-  unit: "C" | "F";
-  aqiData: { aqi: number; components: Record<string, number> } | null;
-  uvData: { value: number } | null;
-  alerts: { event: string; description: string }[];
-  onShare: () => void;
-}
-
-export default function WeatherCard({ data, unit, aqiData, uvData, alerts, onShare }: WeatherCardProps) {
+export default function WeatherCard({ data, unit, aqiData, uvData, alerts, onShare }) {
   const temp = convertTemp(data.main.temp, unit);
   const feels = convertTemp(data.main.feels_like, unit);
   const unitLabel = unit === "C" ? "°C" : "°F";
@@ -111,7 +102,7 @@ export default function WeatherCard({ data, unit, aqiData, uvData, alerts, onSha
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function StatItem({ label, value }) {
   return (
     <div className="flex items-center justify-between bg-slate-900/40 rounded-xl px-3 py-2.5 border border-slate-700/15">
       <span className="text-xs text-slate-400">{label}</span>

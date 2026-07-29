@@ -2,17 +2,11 @@
 
 import { useRef, useEffect, useState } from "react";
 
-interface MapViewProps {
-  lat: number;
-  lon: number;
-  city: string;
-}
-
-export default function MapView({ lat, lon, city }: MapViewProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export default function MapView({ lat, lon, city }) {
+  const canvasRef = useRef(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -45,7 +39,7 @@ export default function MapView({ lat, lon, city }: MapViewProps) {
     img.crossOrigin = "anonymous";
     img.src = `https://tile.openstreetmap.org/${zoom}/${Math.floor(lon2tile(lon, zoom))}/${Math.floor(lat2tile(lat, zoom))}.png`;
 
-  let animationFrameId: number;
+  let animationFrameId;
   let startTime = performance.now();
 
   function renderFrame() {
@@ -111,13 +105,7 @@ export default function MapView({ lat, lon, city }: MapViewProps) {
   );
 }
 
-function drawRoadOverlay(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  lat: number,
-  lon: number
-) {
+function drawRoadOverlay(ctx, w, h, lat, lon) {
   const cx = w / 2;
   const cy = h * 0.48;
 
@@ -217,13 +205,7 @@ function drawRoadOverlay(
   }
 }
 
-function drawNeonOrangeMarker(
-  ctx: CanvasRenderingContext2D,
-  w: number,
-  h: number,
-  city: string,
-  time: number = 0
-) {
+function drawNeonOrangeMarker(ctx, w, h, city, time = 0) {
   const cx = w / 2;
   const cy = h * 0.48;
 
@@ -281,11 +263,11 @@ function drawNeonOrangeMarker(
   ctx.fillText(city, cx, cy + 28);
 }
 
-function lon2tile(lon: number, zoom: number) {
+function lon2tile(lon, zoom) {
   return ((lon + 180) / 360) * Math.pow(2, zoom);
 }
 
-function lat2tile(lat: number, zoom: number) {
+function lat2tile(lat, zoom) {
   return (
     ((1 -
       Math.log(

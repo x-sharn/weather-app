@@ -1,12 +1,8 @@
 "use client";
 
-import { ForecastItem, getWeatherIconUrl } from "@/lib/weather";
+import { getWeatherIconUrl } from "@/lib/weather";
 
-interface ForecastCardProps {
-  items: ForecastItem[];
-}
-
-export default function ForecastCard({ items }: ForecastCardProps) {
+export default function ForecastCard({ items }) {
   if (items.length === 0) return null;
 
   return (

@@ -1,11 +1,6 @@
 "use client";
 
-interface ThemeToggleProps {
-  isLight: boolean;
-  onToggle: () => void;
-}
-
-export default function ThemeToggle({ isLight, onToggle }: ThemeToggleProps) {
+export default function ThemeToggle({ isLight, onToggle }) {
   return (
     <button
       onClick={onToggle}
